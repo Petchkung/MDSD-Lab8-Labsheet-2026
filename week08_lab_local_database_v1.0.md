@@ -123,19 +123,19 @@ class AiListingDrafts extends Table {
 <img width="1906" height="1082" alt="image" src="https://github.com/user-attachments/assets/8212231b-3498-411b-94ab-c8942c17402e" />
 
 ```text
-ข้อ 1: Primary Key
+ข้อ 1 Primary Key
 
 ตาราง AiListingDrafts ใช้ id แบบ autoIncrement() ถูกต้องตามบทเรียน แต่ตาราง FavoriteProducts ใช้ productId ที่มาจาก API เป็น Primary Key ซึ่งไม่ตรงกับบทเรียน วิธีนี้ทำให้ Primary Key ขึ้นอยู่กับระบบภายนอก จึงแก้เป็นเพิ่ม id แบบ Auto-increment เป็น Primary Key และแยก itemId ไว้เป็นคอลัมน์อ้างอิงสินค้า
 
-ข้อ 2: ชนิดข้อมูลราคา
+ข้อ 2 ชนิดข้อมูลราคา
 
 Gemini เลือก RealColumn ตรงกับบทเรียน ไม่ต้องแก้ เพราะราคามีทศนิยม (เช่น 109.95) และตรงกับ Item.price ที่เป็น double
 
-ข้อ 3: เก็บสำเนาข้อมูลหรือเก็บแค่ itemId
+ข้อ 3 เก็บสำเนาข้อมูลหรือเก็บแค่ itemId
 
 Gemini เก็บสำเนาชื่อ ราคา และรูปภาพไว้ในตารางด้วย ซึ่งเหมาะกับหลัก Offline-first เพราะถ้าเก็บแค่ itemId แล้วต้องเรียก API ทุกครั้ง ตอนไม่มีอินเทอร์เน็ตจะแสดงรายการโปรดไม่ได้เลย การเก็บข้อมูลที่ใช้แสดงผลไว้ในเครื่องทำให้เปิดหน้ารายการโปรดได้ทันทีแม้ออฟไลน์
 
-ข้อ 4: .unique() บน itemId
+ข้อ 4 .unique() บน itemId
 
 Gemini ไม่ได้ใส่ .unique() แต่ใช้ productId เป็น Primary Key ซึ่งห้ามซ้ำอยู่แล้ว เมื่อแก้ตามข้อ 1 ให้ id เป็น Primary Key แทน itemId จะไม่ถูกบังคับห้ามซ้ำ จึงต้องเพิ่ม .unique() เอง เพื่อไม่ให้ผู้ใช้กดถูกใจสินค้าเดิมซ้ำจนตารางมีแถวซ้ำสะสม
 ```
