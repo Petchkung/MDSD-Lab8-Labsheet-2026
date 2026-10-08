@@ -56,7 +56,53 @@
 บันทึกโค้ดที่ Gemini ตอบกลับมาที่ด้านล่าง
 
 ```text
-บันทึกผลลัพธ์ที่นี่
+import 'package:drift/drift.dart';
+
+// ------------------------------------------------------
+// ตารางที่ 1: รายการสินค้าที่ผู้ใช้กดถูกใจ (Cached Favorites)
+// ------------------------------------------------------
+class FavoriteProducts extends Table {
+  // รหัสสินค้าจากระบบหลัก (กำหนดเป็น Primary Key เพื่อป้องกันข้อมูลซ้ำ)
+  IntColumn get productId => integer()();
+
+  // ชื่อสินค้า สำหรับแสดงผลแบบออฟไลน์
+  TextColumn get title => text()();
+
+  // ราคาสินค้า (รองรับทศนิยม)
+  RealColumn get price => real()();
+
+  // ลิงก์รูปภาพสินค้า (เปิดให้เป็น null ได้ เผื่อสินค้าไม่มีภาพ)
+  TextColumn get imageUrl => text().nullable()();
+
+  // วันและเวลาที่กดถูกใจ
+  DateTimeColumn get likedAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {productId};
+}
+
+// ------------------------------------------------------
+// ตารางที่ 2: ร่างประกาศขายสินค้าที่ AI ช่วยแนะนำ (AI Listing Drafts)
+// ------------------------------------------------------
+class AiListingDrafts extends Table {
+  // Primary Key ประจำตารางในเครื่อง (รันตัวเลขอัตโนมัติ)
+  IntColumn get id => integer().autoIncrement()();
+
+  // ชื่อประกาศ (nullable: เผื่อ AI สรุปยังไม่เสร็จ หรือผู้ใช้ลบออกเพื่อพิมพ์ใหม่)
+  TextColumn get title => text().nullable()();
+
+  // หมวดหมู่สินค้า
+  TextColumn get category => text().nullable()();
+
+  // คำบรรยายสินค้า
+  TextColumn get description => text().nullable()();
+
+  // พาธของไฟล์ภาพในเครื่อง (จำเป็นต้องมีเสมอ เพราะเป็น Input หลักของ AI)
+  TextColumn get localImagePath => text()();
+
+  // วันและเวลาที่แก้ไขล่าสุด
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+}
 ```
 
 
@@ -71,8 +117,26 @@
 
 > ✅ **Checkpoint 1.1** บันทึกคำตอบจากคำถามด้านบนทั้ง 4 ข้อ พร้อมแนบภาพหน้าจอผลลัพธ์จาก Gemini
 
+<img width="1510" height="812" alt="image" src="https://github.com/user-attachments/assets/abec04ba-53bf-4666-92bf-bb3afa7c0641" />
+<img width="1917" height="1037" alt="image" src="https://github.com/user-attachments/assets/ed03e7d9-dea5-4cfa-a0e3-3748b40728e1" />
+<img width="1906" height="1082" alt="image" src="https://github.com/user-attachments/assets/8212231b-3498-411b-94ab-c8942c17402e" />
+
 ```text
-บันทึกผลลัพธ์ที่นี่
+ข้อ 1: Primary Key
+
+ตาราง AiListingDrafts ใช้ id แบบ autoIncrement() ถูกต้องตามบทเรียน แต่ตาราง FavoriteProducts ใช้ productId ที่มาจาก API เป็น Primary Key ซึ่งไม่ตรงกับบทเรียน วิธีนี้ทำให้ Primary Key ขึ้นอยู่กับระบบภายนอก จึงแก้เป็นเพิ่ม id แบบ Auto-increment เป็น Primary Key และแยก itemId ไว้เป็นคอลัมน์อ้างอิงสินค้า
+
+ข้อ 2: ชนิดข้อมูลราคา
+
+Gemini เลือก RealColumn ตรงกับบทเรียน ไม่ต้องแก้ เพราะราคามีทศนิยม (เช่น 109.95) และตรงกับ Item.price ที่เป็น double
+
+ข้อ 3: เก็บสำเนาข้อมูลหรือเก็บแค่ itemId
+
+Gemini เก็บสำเนาชื่อ ราคา และรูปภาพไว้ในตารางด้วย ซึ่งเหมาะกับหลัก Offline-first เพราะถ้าเก็บแค่ itemId แล้วต้องเรียก API ทุกครั้ง ตอนไม่มีอินเทอร์เน็ตจะแสดงรายการโปรดไม่ได้เลย การเก็บข้อมูลที่ใช้แสดงผลไว้ในเครื่องทำให้เปิดหน้ารายการโปรดได้ทันทีแม้ออฟไลน์
+
+ข้อ 4: .unique() บน itemId
+
+Gemini ไม่ได้ใส่ .unique() แต่ใช้ productId เป็น Primary Key ซึ่งห้ามซ้ำอยู่แล้ว เมื่อแก้ตามข้อ 1 ให้ id เป็น Primary Key แทน itemId จะไม่ถูกบังคับห้ามซ้ำ จึงต้องเพิ่ม .unique() เอง เพื่อไม่ให้ผู้ใช้กดถูกใจสินค้าเดิมซ้ำจนตารางมีแถวซ้ำสะสม
 ```
 
 ---
