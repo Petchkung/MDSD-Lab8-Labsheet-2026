@@ -436,10 +436,18 @@ class SellItemPage extends StatefulWidget {
 
 > ✅ **Checkpoint 6.1** ถ่ายภาพหน้าจอที่แสดงให้เห็นว่า Tab รายการโปรดและหน้าร่างประกาศยังคงแสดงข้อมูลได้ตามปกติแม้ไม่มีอินเทอร์เน็ตเลย (ส่วน Tab หน้าหลักที่ดึงจาก Fake Store API คาดว่าจะแสดง Error ตามปกติ เพราะยังไม่ได้ทำ Local Cache ให้หน้านั้น) 
 
-```text
-บันทึกผลลัพธ์ที่นี่
-```
+<img width="1910" height="1146" alt="image" src="https://github.com/user-attachments/assets/7afc22ca-1f43-4582-a77f-1c846f80938f" />
+<img width="1912" height="1132" alt="image" src="https://github.com/user-attachments/assets/fbcced04-397d-4e47-918f-1d846036aad0" />
+<img width="1915" height="1140" alt="image" src="https://github.com/user-attachments/assets/901558a8-b93a-463b-89bd-26ecb70c8baf" />
 
+```
+เมื่อเปิด Airplane mode แล้วปิดเปิดแอปใหม่ Tab หน้าหลักแสดง error "ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้" เพราะ ItemRepositoryApi ต้องดึงข้อมูลจาก Fake Store API ซึ่งเป็นผลที่คาดไว้ เพราะยังไม่ได้ทำ Local Cache ให้หน้านี้
+
+ส่วน Tab รายการโปรดและหน้าร่างประกาศของฉันยังแสดงข้อมูลได้ตามปกติ เพราะ FavoritesRepositoryDrift และ ListingDraftRepositoryDrift อ่านจากฐานข้อมูล Drift ในเครื่องเท่านั้น ไม่มีการเรียก API ตามหลัก Offline-first
+
+ข้อสังเกต รูปในรายการโปรดไม่แสดงตอนออฟไลน์ เพราะตาราง FavoriteItems เก็บแค่ imageUrl และ Image.network() ต้องดาวน์โหลดรูปผ่านอินเทอร์เน็ต ส่วนรูปย่อในร่างประกาศแสดงได้ เพราะเก็บ imagePath ที่ชี้ไปยังไฟล์ในเครื่องและแสดงด้วย Image.file() ถ้าต้องการให้รูปในรายการโปรดแสดงได้ตอนออฟไลน์ ต้องเก็บไฟล์รูปไว้ในเครื่องด้วย
+
+```
 ---
 
 ## ปัญหาที่พบบ่อยและวิธีแก้ไข (Troubleshooting)
